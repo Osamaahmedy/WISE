@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة بيانات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            margin: 10px 0 5px;
+            color: #555;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #response {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        #response.success {
+            color: #4CAF50;
+        }
+
+        #response.error {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>إضافة مستخدم جديد</h1>
+        <form id="addUserForm">
+            <label for="firstName">الاسم الأول:</label>
+            <input type="text" id="firstName" name="firstName" placeholder="أدخل الاسم الأول" required>
+            
+            <label for="lastName">اسم العائلة:</label>
+            <input type="text" id="lastName" name="lastName" placeholder="أدخل اسم العائلة" required>
+            
+            <label for="phoneNumber">رقم الهاتف:</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" placeholder="أدخل رقم الهاتف" required>
+            
+            <button type="submit"><i class="fa fa-plus"></i> إضافة</button>
+        </form>
+
+        <div id="response"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#addUserForm").submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: "insert.php",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $("#response").html(response);
+                        $("#response").addClass("success").removeClass("error");
+                        $("#addUserForm")[0].reset();
+                    },
+                    error: function() {
+                        $("#response").html("حدث خطأ أثناء الإرسال.");
+                        $("#response").addClass("error").removeClass("success");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

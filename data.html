@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        #search {
+            padding: 10px;
+            width: 300px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #usersTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #usersTable th, #usersTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #usersTable th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #usersTable tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #usersTable tr:hover {
+            background-color: #ddd;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .delete-btn:hover {
+            background-color: #D32F2F;
+        }
+    </style>
+</head>
+<body>
+    <h1>إدارة المستخدمين</h1>
+
+    <!-- حقل البحث -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <input type="text" id="search" placeholder="أدخل رقم الهاتف">
+        <button id="searchButton">بحث</button>
+    </div>
+
+    <!-- جدول عرض المستخدمين -->
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>المعرف</th>
+                <th>الاسم الأول</th>
+                <th>اسم العائلة</th>
+                <th>رقم الهاتف</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- سيتم ملء البيانات هنا عبر AJAX -->
+        </tbody>
+    </table>
+
+    <script>
+        $(document).ready(function () {
+            // تحميل البيانات عند تحميل الصفحة
+            loadUsers();
+
+            // تحميل البيانات من قاعدة البيانات
+            function loadUsers() {
+                $.ajax({
+                    url: "fetch.php",
+                    type: "GET",
+                    success: function (data) {
+                        $("#usersTable tbody").html(data);
+                    }
+                });
+            }
+
+            // البحث عن مستخدم
+            $("#searchButton").click(function () {
+                const phoneNumber = $("#search").val();
+                $.ajax({
+                    url: "fetch.php",
+                    type: "GET",
+                    data: { phoneNumber: phoneNumber },
+                    success: function (data) {
+                        $("#usersTable tbody").html(data);
+                    }
+                });
+            });
+
+            // حذف مستخدم
+            $(document).on("click", ".deleteUser", function () {
+                const id = $(this).data("id");
+                if (confirm("هل تريد حذف هذا المستخدم؟")) {
+                    $.ajax({
+                        url: "delete.php",
+                        type: "POST",
+                        data: { id: id },
+                        success: function (response) {
+                            alert(response);
+                            loadUsers(); // إعادة تحميل البيانات بعد الحذف
+                        }
+                    });
+                }
+            });
+
+            // تعديل مستخدم
+            $(document).on("click", ".editUser", function () {
+                const id = $(this).data("id");
+                const currentFirstName = $(this).data("firstname");
+                const currentLastName = $(this).data("lastname");
+                const currentPhoneNumber = $(this).data("phonenumber");
+
+                // طلب البيانات الجديدة من المستخدم
+                const newFirstName = prompt("أدخل الاسم الأول:", currentFirstName);
+                if (newFirstName === null) return;
+
+                const newLastName = prompt("أدخل اسم العائلة:", currentLastName);
+                if (newLastName === null) return;
+
+                const newPhoneNumber = prompt("أدخل رقم الهاتف:", currentPhoneNumber);
+                if (newPhoneNumber === null) return;
+
+                // إرسال البيانات المحدثة إلى السيرفر
+                $.ajax({
+                    url: "update.php",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        firstName: newFirstName,
+                        lastName: newLastName,
+                        phoneNumber: newPhoneNumber
+                    },
+                    success: function (response) {
+                        alert(response);
+                        loadUsers(); // إعادة تحميل البيانات بعد التحديث
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

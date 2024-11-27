@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع وتصدير البيانات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #f44336;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>رفع وتصدير البيانات</h1>
+
+        <!-- فورم رفع ملف Excel -->
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="file">رفع ملف Excel:</label>
+            <input type="file" id="file" name="file" accept=".xls, .xlsx" required>
+            <button type="submit">رفع الملف</button>
+        </form>
+
+        <!-- زر تصدير البيانات -->
+        <form action="export.php" method="POST">
+            <button type="submit" style="margin-top: 20px;">تصدير البيانات إلى Excel</button>
+        </form>
+
+        <!-- مكان عرض الحسابات المكررة -->
+        <div id="response"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // رفع ملف Excel
+            $("#uploadForm").submit(function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: "upload.php",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        $("#response").html(response);
+                    },
+                    error: function () {
+                        $("#response").html("حدث خطأ أثناء رفع الملف.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
